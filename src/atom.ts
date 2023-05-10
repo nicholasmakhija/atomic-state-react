@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
 
-const isFunction = (value: unknown): boolean =>
-  typeof value === 'function';
-
 import type {
   Atom,
   AtomDerivedSetter,
@@ -10,6 +7,9 @@ import type {
   AtomSetter,
   StoreActions
 } from './types';
+
+const isFunction = (value: unknown): boolean =>
+  typeof value === 'function';
 
 const dataStore = new Map();
 const createStoreActions = <T>(value: T): StoreActions<T> => {
