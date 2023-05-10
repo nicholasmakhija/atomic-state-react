@@ -1,0 +1,42 @@
+{
+  "ignorePatterns": ["node_modules/**"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "arrow-parens": ["error"],
+    "comma-dangle": ["error"],
+    "keyword-spacing": ["error", {
+      "before": true,
+      "after": true
+    }],
+    "no-console": 1,
+    "no-multiple-empty-lines": ["error", { "max": 1, "maxBOF": 0, "maxEOF": 1 }],
+    "quotes": [2, "single"],
+    "semi": [2, "always"],
+    "space-before-blocks": ["error", "always"],
+    "vars-on-top": 1,
+    "indent": "off",
+    "@typescript-eslint/indent": ["error", 2, { "SwitchCase": 1 }],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error"],
+    "@typescript-eslint/ban-ts-comment": "off"
+  },
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "globals": {
+    "require": true,
+    "module": true,
+    "__dirname": true,
+    "describe": true,
+    "it": true,
+    "expect": true,
+    "global": true
+  }
+}
