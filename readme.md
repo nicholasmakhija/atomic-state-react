@@ -1,6 +1,6 @@
 # Introduction:
 
-Atomic state management for React with a similar API similar to (Jotai)[https://jotai.org/].
+Atomic state management for React with a similar API similar to [Jotai](https://jotai.org/).
 
 There are 3 main pieces:
 
