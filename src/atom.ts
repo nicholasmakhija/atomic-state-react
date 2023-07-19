@@ -31,7 +31,7 @@ export function createAtom<T>(
 ): Atom<T> {
   const isComputed = isFunction(initialValue);
   const value = isComputed
-    ? (undefined as unknown as T)
+    ? (undefined as T)
     : initialValue as T;
 
   const {
@@ -71,8 +71,8 @@ export function createAtom<T>(
       ? (initialValue as AtomGetter<T>)(get)
       : getValue();
 
-    if (isFunction((newValue as unknown as Promise<T>).then)) {
-      (newValue as unknown as Promise<T>).then(updateSubscribers);
+    if (isFunction((newValue as Promise<T>).then)) {
+      (newValue as Promise<T>).then(updateSubscribers);
     } else {
       updateSubscribers(newValue);
     }
@@ -85,16 +85,16 @@ export function createAtom<T>(
     get: getValue,
     set: (newValue) => {
       const nextValue = isFunction(newValue)
-        ? (newValue as unknown as AtomDerivedSetter)(getValue())
+        ? (newValue as AtomDerivedSetter)(getValue())
         : newValue as T;
 
       updateSubscribers(nextValue);
     },
     subscribe: (callback) => {
-      subscribers.add(callback as unknown as AtomSetter);
+      subscribers.add(callback as AtomSetter);
 
       return () => {
-        subscribers.delete(callback as unknown as AtomSetter);
+        subscribers.delete(callback as AtomSetter);
       };
     }
   };
