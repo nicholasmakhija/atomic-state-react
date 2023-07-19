@@ -1,22 +1,22 @@
-export type AtomDerivedSetter = <T>(newValue: T) => T;
+type AtomGetter<T> = () => T;
 
-export type AtomSetter = <T>(
-  newValue: T | AtomDerivedSetter
-) => void;
+export type AtomSetter<T> = (newValue: T) => void;
+
+export type AtomUpdater<T> = (newValue: T) => T;
 
 export interface Atom<T> {
   id: string;
-  get: () => T;
-  set: AtomSetter
-  subscribe: (callback: (newValue: T) => void) => () => void;
+  get: AtomGetter<T>;
+  set: AtomSetter<unknown>;
+  subscribe: (callback: AtomSetter<T>) => () => void;
 }
 
-export type AtomGetter<AtomType> = (
+export type AtomReader<AtomType> = (
   get: <Target>(a: Atom<Target>) => Target
 ) => AtomType;
 
 export interface StoreActions<T> {
   getId: () => string;
-  getValue: () => T;
-  setValue: (newValue: T) => void;
+  getValue: AtomGetter<T>;
+  setValue: AtomSetter<unknown>;
 }

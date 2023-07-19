@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 
 import type {
   Atom,
-  AtomDerivedSetter,
-  AtomGetter,
+  AtomReader,
   AtomSetter,
+  AtomUpdater,
   StoreActions
 } from './types';
 
@@ -27,7 +27,7 @@ const createStoreActions = <T>(value: T): StoreActions<T> => {
 };
 
 export function createAtom<T>(
-  initialValue: T | AtomGetter<T>
+  initialValue: T | AtomReader<T>
 ): Atom<T> {
   const isComputed = isFunction(initialValue);
   const value = isComputed
@@ -39,7 +39,7 @@ export function createAtom<T>(
     getValue,
     setValue
   } = createStoreActions(value);
-  const subscribers = new Set<AtomSetter>();
+  const subscribers = new Set<AtomSetter<T>>();
   const subscribed = new Set<string>();
 
   const updateSubscribers = (updatedValue: T): void => {
@@ -68,7 +68,7 @@ export function createAtom<T>(
 
   const computeValue = (): void => {
     const newValue = isComputed
-      ? (initialValue as AtomGetter<T>)(get)
+      ? (initialValue as AtomReader<T>)(get)
       : getValue();
 
     if (isFunction((newValue as Promise<T>).then)) {
@@ -85,22 +85,22 @@ export function createAtom<T>(
     get: getValue,
     set: (newValue) => {
       const nextValue = isFunction(newValue)
-        ? (newValue as AtomDerivedSetter)(getValue())
+        ? (newValue as AtomUpdater<T>)(getValue())
         : newValue as T;
 
       updateSubscribers(nextValue);
     },
     subscribe: (callback) => {
-      subscribers.add(callback as AtomSetter);
+      subscribers.add(callback as AtomSetter<T>);
 
       return () => {
-        subscribers.delete(callback as AtomSetter);
+        subscribers.delete(callback as AtomSetter<T>);
       };
     }
   };
 }
 
-export function useAtom<T>(atom: Atom<T>): [T, AtomSetter] {
+export function useAtom<T>(atom: Atom<T>): [T, AtomSetter<unknown>] {
   const [value, setValue] = useState(atom.get());
 
   useEffect(() => {
