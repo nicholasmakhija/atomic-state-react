@@ -20,7 +20,8 @@ const nodeEnv = process.env.NODE_ENV;
 const isProd = nodeEnv === 'production';
 
 const commonOutput = {
-  compact: true
+  compact: true,
+  sourcemap: !isProd
 };
 
 /**
@@ -45,7 +46,9 @@ export default [{
     format: 'esm'
   }],
   plugins: [
-    eslint(),
+    eslint({
+      filterInclude: `./${pkg.paths.src}/**/*.+(ts|tsx)`
+    }),
     nodeResolve({
       extensions: ['.js', '.ts']
     }),

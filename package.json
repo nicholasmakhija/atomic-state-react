@@ -4,6 +4,28 @@
   "description": "Atomic external state management for React",
   "author": "Nicholas Makhija",
   "license": "UNLICENSED",
+  "module": "lib/esm/index.js",
+  "main": "lib/cjs/index.js",
+  "types": "lib/types/index.d.ts",
+  "files": [
+    "lib/"
+  ],
+  "paths": {
+    "src": "src",
+    "lib": "lib",
+    "bin": "bin"
+  },
+  "scripts": {
+    "clean:bin": "rimraf $npm_package_paths_bin",
+    "clean:output": "rimraf $npm_package_paths_lib/*",
+    "clean": "run-p clean:**",
+    "lint": "eslint \"$npm_package_paths_src/**/*.+(ts|tsx)\"",
+    "ts": "tsc --outDir $npm_package_paths_bin",
+    "make-bundle": "rollup --config --exports named",
+    "dev": "run-s --silent clean ts make-bundle",
+    "build": "NODE_ENV=production npm run dev clean:bin",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "devDependencies": {
     "@rbnlffl/rollup-plugin-eslint": "^5.0.0",
     "@rollup/plugin-commonjs": "^24.0.1",
