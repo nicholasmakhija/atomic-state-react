@@ -5,17 +5,16 @@ import type {
   AtomReader,
   AtomSetter,
   AtomUpdater,
+  StateDispatcher,
   StoreActions
 } from './types';
 
-const isFunction = (value: unknown): boolean =>
+const isFunction = <T>(value: unknown): value is T =>
   typeof value === 'function';
 
 const dataStore = new Map();
-const createStoreActions = <T>(value: T): StoreActions<T> => {
+const createStoreActions = (): StoreActions => {
   const key = `atom-${dataStore.size}`;
-
-  dataStore.set(key, value);
 
   return {
     getId: () => key,
@@ -29,17 +28,13 @@ const createStoreActions = <T>(value: T): StoreActions<T> => {
 export function createAtom<T>(
   initialValue: T | AtomReader<T>
 ): Atom<T> {
-  const isComputed = isFunction(initialValue);
-  const value = isComputed
-    ? (undefined as T)
-    : initialValue as T;
-
   const {
     getId,
     getValue,
     setValue
-  } = createStoreActions(value);
-  const subscribers = new Set<AtomSetter<T>>();
+  } = createStoreActions();
+  const isAtomGetter = isFunction<AtomReader<T>>(initialValue);
+  const subscribers = new Set<StateDispatcher<T>>();
   const subscribed = new Set<string>();
 
   const updateSubscribers = (updatedValue: T): void => {
@@ -66,41 +61,42 @@ export function createAtom<T>(
     return currentValue;
   };
 
-  const computeValue = (): void => {
-    const newValue = isComputed
-      ? (initialValue as AtomReader<T>)(get)
-      : getValue();
+  const computeValue = (): T => {
+    const newValue = isAtomGetter ? initialValue(get) : getValue<T>();
 
     if (isFunction((newValue as Promise<T>).then)) {
       (newValue as Promise<T>).then(updateSubscribers);
     } else {
       updateSubscribers(newValue);
     }
+
+    return newValue;
   };
 
-  if (isComputed) computeValue();
+  // set value when "atom" is created
+  setValue(isAtomGetter ? computeValue() : initialValue);
 
   return {
     id: getId(),
     get: getValue,
     set: (newValue) => {
-      const nextValue = isFunction(newValue)
-        ? (newValue as AtomUpdater<T>)(getValue())
-        : newValue as T;
+      const nextValue = isFunction<AtomUpdater<T>>(newValue)
+        ? newValue(getValue())
+        : newValue;
 
       updateSubscribers(nextValue);
     },
     subscribe: (callback) => {
-      subscribers.add(callback as AtomSetter<T>);
+      subscribers.add(callback);
 
       return () => {
-        subscribers.delete(callback as AtomSetter<T>);
+        subscribers.delete(callback);
       };
     }
   };
 }
 
-export function useAtom<T>(atom: Atom<T>): [T, AtomSetter<unknown>] {
+export function useAtom<T>(atom: Atom<T>): [T, AtomSetter<T>] {
   const [value, setValue] = useState(atom.get());
 
   useEffect(() => {
