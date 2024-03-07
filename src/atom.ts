@@ -13,17 +13,15 @@ const isFunction = <T>(value: unknown): value is T =>
   typeof value === 'function';
 
 const dataStore = new Map();
-const createStoreActions = (): StoreActions => {
-  const key = `atom-${dataStore.size}`;
-
-  return {
-    getId: () => key,
-    getValue: () => dataStore.get(key),
-    setValue: (newValue) => {
-      dataStore.set(key, newValue);
-    }
-  };
-};
+const createStoreActions = (
+  key = `atom-${dataStore.size}`
+): StoreActions => ({
+  getId: () => key,
+  getValue: () => dataStore.get(key),
+  setValue: (newValue) => {
+    dataStore.set(key, newValue);
+  }
+});
 
 export function createAtom<T>(
   initialValue: T | AtomReader<T>
