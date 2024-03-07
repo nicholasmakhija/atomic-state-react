@@ -40,7 +40,7 @@ const starWarsSpaceShips = createAtom(() =>
     .then((res) => res.json())
 );
 const starWarsShipNames = createAtom(
-  (get) => Object.keys(get(starWarsSpaceShips) ?? {})
+  (get) => Object.keys(get(starWarsSpaceShips) ?? [])
 );
 ```
 
