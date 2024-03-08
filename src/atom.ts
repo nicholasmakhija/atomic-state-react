@@ -48,16 +48,17 @@ export function createAtom<T>(
     return currentValue;
   };
 
-  const computeValue = (): T => {
-    const newValue = isAtomGetter ? initialValue(get) : getValue<T>();
+  const computeValue = (): T | undefined => {
+    const atomValue = isAtomGetter ? initialValue(get) : getValue<T>();
+    const isPromise = isFunction((atomValue as Promise<T>).then);
 
-    if (isFunction((newValue as Promise<T>).then)) {
-      (newValue as Promise<T>).then(updateSubscribers);
+    if (isPromise) {
+      (atomValue as Promise<T>).then(updateSubscribers);
     } else {
-      updateSubscribers(newValue);
+      updateSubscribers(atomValue);
     }
 
-    return newValue;
+    return isPromise ? undefined : atomValue;
   };
 
   // set value when "atom" is created
