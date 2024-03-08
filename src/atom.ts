@@ -1,27 +1,15 @@
 import { useEffect, useState } from 'react';
 
+import { createStore, isFunction } from './utils';
 import type {
   Atom,
   AtomReader,
   AtomSetter,
   AtomUpdater,
-  StateDispatcher,
-  StoreActions
+  StateDispatcher
 } from './types';
 
-const isFunction = <T>(value: unknown): value is T =>
-  typeof value === 'function';
-
-const dataStore = new Map();
-const createStoreActions = (
-  key = `atom-${dataStore.size}`
-): StoreActions => ({
-  getId: () => key,
-  getValue: () => dataStore.get(key),
-  setValue: (newValue) => {
-    dataStore.set(key, newValue);
-  }
-});
+const getActions = createStore();
 
 export function createAtom<T>(
   initialValue: T | AtomReader<T>
@@ -30,7 +18,7 @@ export function createAtom<T>(
     getId,
     getValue,
     setValue
-  } = createStoreActions();
+  } = getActions();
   const isAtomGetter = isFunction<AtomReader<T>>(initialValue);
   const subscribers = new Set<StateDispatcher<T>>();
   const subscribed = new Set<string>();
@@ -51,6 +39,7 @@ export function createAtom<T>(
         if (currentValue !== newValue) {
           currentValue = newValue;
 
+          // re-compute value of atom being read
           computeValue();
         }
       });

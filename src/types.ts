@@ -16,9 +16,3 @@ export interface Atom<T> {
 export type AtomReader<AtomType> = (
   get: <Target>(a: Atom<Target>) => Target
 ) => AtomType;
-
-export interface StoreActions {
-  getId: () => string;
-  getValue: <T>() => T;
-  setValue: <T>(newValue: T) => void;
-}
