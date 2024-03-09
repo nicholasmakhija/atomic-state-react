@@ -11,7 +11,8 @@
     "emitDeclarationOnly": true,
     "noEmitOnError": true,
     "lib": ["es2017", "dom"],
-    "esModuleInterop": false
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "lib", "cjs", "esm", "umd"]
