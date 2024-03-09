@@ -2,7 +2,7 @@
 
 Atomic state management for React with a similar API similar to [Jotai](https://jotai.org/).
 
-There are 3 main pieces:
+There are 4 main pieces:
 
 ## createAtom:
 
@@ -14,6 +14,20 @@ import { createAtom } from 'path/to/module';
 const booleanAtom = createAtom(false);
 const numberAtom = createAtom(100);
 const stringAtom = createAtom('loading');
+const stringArrayAtom = createAtom([
+  'ACT', 'NSW', 'NT', 'QLD', 'SA', 'TAS', 'VIC', 'WA'
+]);
+const objectArrayAtom = createAtom([
+  {
+    name: 'New South Wales',
+    code: 'NSW'
+  },
+  {
+    name: 'Queensland',
+    code: 'QLD'
+  }
+  // remaining states
+]);
 const objectAtom = createAtom({
   id: 007,
   name: {
@@ -35,8 +49,8 @@ const totalSalaryAtom = createAtom(
 );
 
 // or fetch some data
-const starWarsSpaceShips = createAtom(() => 
-  fetch('https://swapi.dev/api/starships')
+const starWarsSpaceShips = createAtom(
+  () => fetch('https://swapi.dev/api/starships')
     .then((res) => res.json())
 );
 const starWarsShipNames = createAtom(
@@ -69,7 +83,7 @@ const Input = () => {
       />
     <div>
   );
-}
+};
 ```
 
 ## useAtomValue:
@@ -85,10 +99,34 @@ const DisplaySalary = () => {
   const value = useAtomValue(salaryAtom);
 
   return (
-    <div>{ `$${value.toFixed(2)}` }<div>
+    <div>{`$${value.toFixed(2)}`}<div>
   );
-}
+};
 ```
 
+## useSetAtom:
+
+Similar to the `useAtomValue` hook, only this returns the setter function.
+
+```typescript
+import { createAtom, useSetAtom } from 'path/to/module';
+
+const salaryAtom = createAtom(100_000);
+
+const IncreaseSalary = () => {
+  const setValue = useSetAtom(salaryAtom);
+
+  const clickHandler = () => {
+    setValue((currentSalary) => currentSalary + currentSalary * 0.025);
+  };
+
+  return (
+    <>
+      <div>Increment salary by 2.5%</div>
+      <button onClick={clickHandler}>click once a year</button>
+    </>
+  );
+};
+```
 
 

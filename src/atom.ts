@@ -101,3 +101,9 @@ export function useAtomValue<T>(atom: Atom<T>): T {
 
   return value;
 }
+
+export function useSetAtom<T>(atom: Atom<T>): AtomSetter<T> {
+  const [, setValue] = useAtom(atom);
+
+  return setValue;
+}
