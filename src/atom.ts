@@ -57,7 +57,7 @@ export function createAtom<T>(
     const hasThen = isPromise<T>(atomValue);
 
     if (hasThen) {
-      (atomValue as Promise<T>).then(updateSubscribers);
+      (atomValue).then(updateSubscribers);
     } else {
       updateSubscribers(atomValue);
     }
