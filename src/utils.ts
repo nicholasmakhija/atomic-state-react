@@ -10,3 +10,6 @@ export const createStore = (
 
 export const isFunction = <T>(value: unknown): value is T =>
   typeof value === 'function';
+
+export const isPromise = <T>(value: unknown): value is Promise<T> =>
+  value instanceof Promise;

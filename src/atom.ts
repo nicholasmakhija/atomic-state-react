@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import { createStore, isFunction } from './utils';
+import {
+  createStore,
+  isFunction,
+  isPromise
+} from './utils';
 import type {
   Atom,
   AtomReader,
@@ -50,15 +54,15 @@ export function createAtom<T>(
 
   const computeValue = (): T | undefined => {
     const atomValue = isAtomGetter ? initialValue(get) : getValue<T>();
-    const isPromise = isFunction((atomValue as Promise<T>).then);
+    const hasThen = isPromise<T>(atomValue);
 
-    if (isPromise) {
+    if (hasThen) {
       (atomValue as Promise<T>).then(updateSubscribers);
     } else {
       updateSubscribers(atomValue);
     }
 
-    return isPromise ? undefined : atomValue;
+    return hasThen ? undefined : atomValue;
   };
 
   // set value when "atom" is created
