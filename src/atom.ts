@@ -27,13 +27,13 @@ export function createAtom<T>(
   const subscribers = new Set<StateDispatcher<T>>();
   const subscribed = new Set<string>();
 
-  const updateSubscribers = (updatedValue: T): void => {
+  function updateSubscribers(updatedValue: T): void {
     setValue(updatedValue);
 
     subscribers.forEach((callback) => callback(updatedValue));
-  };
+  }
 
-  const get = <Target>(atom: Atom<Target>): Target => {
+  function get<Target>(atom: Atom<Target>): Target {
     let currentValue = atom.get();
 
     if (!subscribed.has(atom.id)) {
@@ -50,20 +50,20 @@ export function createAtom<T>(
     }
 
     return currentValue;
-  };
+  }
 
-  const computeValue = (): T | undefined => {
+  function computeValue(): T | undefined {
     const atomValue = isAtomGetter ? initialValue(get) : getValue<T>();
     const hasThen = isPromise<T>(atomValue);
 
     if (hasThen) {
-      (atomValue).then(updateSubscribers);
+      atomValue.then(updateSubscribers);
     } else {
       updateSubscribers(atomValue);
     }
 
     return hasThen ? undefined : atomValue;
-  };
+  }
 
   // set value when "atom" is created
   setValue(isAtomGetter ? computeValue() : initialValue);
